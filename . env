@@ -1,0 +1,14 @@
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Google Gemini API Key (FREE - Get yours at https://makersuite.google.com/app/apikey)
+GOOGLE_AI_KEY=AIzaSyABC123-your-actual-gemini-key-here
+
+# Cache Settings
+CACHE_TTL=3600
+MAX_CACHE_SIZE=10000
+
+# Rate Limiting
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=1000
