@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Gemini Speed Coding Studio</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a2e;
+            --primary: #00ff88;
+            --secondary: #6c63ff;
+            --accent: #ff6b6b;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 2px solid var(--primary);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            font-size: 30px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .template-btn {
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .template-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        /* Editor Area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            background: var(--surface);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: var(--bg);
+            border-color: var(--primary);
+        }
+
+        #editor {
+            flex: 1;
+            width: 100%;
+            padding: 20px;
+            background: var(--bg);
+            color: var(--text);
+            border: none;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            tab-size: 2;
+        }
+
+        #editor:focus {
+            outline: none;
+        }
+
+        /* Output Panel */
+        .output-panel {
+            height: 200px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .output-header {
+            padding: 10px 20px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-content {
+            padding: 15px;
+            overflow-y: auto;
+            height: calc(100% - 40px);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .metric {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: none;
+            color: var(--primary);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .success { color: var(--primary); }
+        .error { color: var(--accent); }
+        .info { color: var(--secondary); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>Gemini Speed Studio</span>
+                <span style="font-size: 12px; color: var(--text-secondary);">100x Faster</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span id="statusText">Connected</span>
+                <span class="metric" id="speedMetric">100x</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Code Generation -->
+                <div class="section">
+                    <div class="section-title">🎯 Generate Code</div>
+                    <textarea 
+                        id="promptInput" 
+                        class="prompt-input" 
+                        placeholder="Describe the code you want to generate...&#10;&#10;Example: Create a REST API for user management"
+                    ></textarea>
+                    <select id="languageSelect">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="generateCode()">
+                        ⚡ Generate Code
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateBatch()">
+                        📦 Batch Generate (10 files)
+                    </button>
+                </div>
+
+                <!-- Templates -->
+                <div class="section">
+                    <div class="section-title">📄 Instant Templates (0.001ms)</div>
+                    <div class="template-grid">
+                        <div class="template-btn" onclick="useTemplate('crud-api')">
+                            🚀 CRUD API
+                        </div>
+                        <div class="template-btn" onclick="useTemplate('react-component')">
+                            ⚛️ React Component
+                        </div>
+                        <div class="template-btn" onclick="useTemplate('auth')">
+                            🔐 Authentication
+                        </div>
+                        <div class="template-btn" onclick="useTemplate('express-server')">
+                            🖥️ Express Server
+                        </div>
+                        <div class="template-btn" onclick="useTemplate('utils')">
+                            🛠️ Utils Library
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="section">
+                    <div class="section-title">⚙️ Actions</div>
+                    <button class="btn btn-outline" onclick="clearEditor()">
+                        🗑️ Clear Editor
+                    </button>
+                    <button class="btn btn-outline" onclick="copyCode()">
+                        📋 Copy Code
+                    </button>
+                    <button class="btn btn-outline" onclick="downloadCode()">
+                        💾 Download
+                    </button>
+                    <button class="btn btn-outline" onclick="refreshMetrics()">
+                        📊 Refresh Metrics
+                    </button>
+                </div>
+
+                <!-- Metrics -->
+                <div class="section">
+                    <div class="section-title">📊 Performance</div>
+                    <div id="metricsDisplay" style="font-size: 12px; color: var(--text-secondary);">
+                        Loading metrics...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <div class="editor-header">
+                    <div class="tabs">
+                        <div class="tab active">📄 main.js</div>
+                        <div class="tab" id="fileCount">📁 0 files</div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" style="width: auto; margin: 0;" onclick="runCode()">
+                            ▶ Run
+                        </button>
+                        <span id="responseTime" class="metric">0ms</span>
+                    </div>
+                </div>
+                <textarea id="editor">// ⚡ Gemini Speed Coding Studio
+// Your generated code will appear here...
+
+console.log('Welcome to 100x Speed Coding!');
+
+// Try:
+// 1. Type a prompt in the sidebar and click "Generate Code"
+// 2. Use instant templates for 0.001ms generation
+// 3. Batch generate multiple files at once
+
+function example() {
+    return {
+        speed: '100x',
+        provider: 'Gemini Flash',
+        cost: 'FREE'
+    };
+}</textarea>
+                <div class="output-panel">
+                    <div class="output-header">
+                        <span>📤 Output</span>
+                        <div>
+                            <span class="loading" id="loading">⚡ Generating...</span>
+                            <span id="generationSpeed"></span>
+                        </div>
+                    </div>
+                    <div class="output-content" id="outputContent">
+                        <span class="info">Ready. Describe what you want to build!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentSpeed = 0;
+
+        // ============================================
+        // CODE GENERATION
+        // ============================================
+
+        async function generateCode() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            const language = document.getElementById('languageSelect').value;
+
+            if (!prompt) {
+                showOutput('❌ Please enter a prompt first', 'error');
+                return;
+            }
+
+            showLoading();
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(`${API_URL}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, language })
+                });
+
+                const data = await response.json();
+                const responseTime = (performance.now() - startTime).toFixed(2);
+
+                if (data.success) {
+                    document.getElementById('editor').value = data.code;
+                    updateResponseTime(responseTime, data);
+                    showOutput(`
+✅ Code generated successfully!
+⏱️ Response: ${responseTime}ms
+📡 Source: ${data.source || 'API'}
+🚀 Speed: ${data.speed || 'Fast'}
+💾 Cache: ${data.tier || 'Fresh'}
+                    `.trim(), 'success');
+                } else {
+                    showOutput(`❌ ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showOutput(`❌ Network error: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function generateBatch() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            
+            if (!prompt) {
+                showOutput('❌ Please enter a base prompt', 'error');
+                return;
+            }
+
+            showLoading();
+            const startTime = performance.now();
+
+            const specifications = [
+                { prompt: `${prompt} - Model`, language: 'javascript', filename: 'model.js' },
+                { prompt: `${prompt} - Controller`, language: 'javascript', filename: 'controller.js' },
+                { prompt: `${prompt} - Routes`, language: 'javascript', filename: 'routes.js' },
+                { prompt: `${prompt} - Service`, language: 'javascript', filename: 'service.js' },
+                { prompt: `${prompt} - Validation`, language: 'javascript', filename: 'validation.js' },
+                { prompt: `${prompt} - Tests`, language: 'javascript', filename: 'test.js' },
+                { prompt: `${prompt} - Config`, language: 'javascript', filename: 'config.js' },
+                { prompt: `${prompt} - Middleware`, language: 'javascript', filename: 'middleware.js' },
+                { prompt: `${prompt} - Utils`, language: 'javascript', filename: 'utils.js' },
+                { prompt: `${prompt} - README`, language: 'markdown', filename: 'README.md' }
+            ];
+
+            try {
+                const response = await fetch(`${API_URL}/generate/batch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ specifications })
+                });
+
+                const data = await response.json();
+                const totalTime = (performance.now() - startTime).toFixed(2);
+
+                if (data.success) {
+                    // Show first file in editor
+                    document.getElementById('editor').value = data.files[0].code;
+                    document.getElementById('fileCount').textContent = `📁 ${data.files.length} files`;
+                    
+                    updateResponseTime(totalTime, data.stats);
+                    showOutput(`
+✅ Batch generation complete!
+📦 Files: ${data.stats.totalFiles}
+⏱️ Total: ${data.stats.totalTime}
+📊 Average: ${data.stats.averageTime}
+⚡ Speed: ${data.stats.speedMultiplier}
+💾 Cached: ${data.stats.cacheHits}
+🎯 Templates: ${data.stats.templateHits}
+🤖 AI Generated: ${data.stats.apiGenerated}
+                    `.trim(), 'success');
+                }
+            } catch (error) {
+                showOutput(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function useTemplate(templateName) {
+            showLoading();
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(`${API_URL}/generate/template`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        template: templateName,
+                        prompt: `Generate ${templateName} code`
+                    })
+                });
+
+                const data = await response.json();
+                const genTime = (performance.now() - startTime).toFixed(3);
+
+                if (data.success) {
+                    document.getElementById('editor').value = data.code;
+                    document.getElementById('generationSpeed').textContent = 
+                        `⚡ Generated in ${data.generationTime}`;
+                    
+                    showOutput(`
+✅ Template instantiated: ${templateName}
+⏱️ Time: ${data.generationTime}
+🚀 Speed: ${data.speed}
+                    `.trim(), 'success');
+                }
+            } catch (error) {
+                showOutput(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function showOutput(message, type = 'info') {
+            const output = document.getElementById('outputContent');
+            output.innerHTML = `<span class="${type}">${message}</span>`;
+        }
+
+        function updateResponseTime(time, data) {
+            document.getElementById('responseTime').textContent = `${time}ms`;
+            if (data && data.speed) {
+                document.getElementById('generationSpeed').textContent = `🚀 ${data.speed}`;
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'inline';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function clearEditor() {
+            document.getElementById('editor').value = '';
+            showOutput('🗑️ Editor cleared', 'info');
+        }
+
+        function copyCode() {
+            const editor = document.getElementById('editor');
+            editor.select();
+            document.execCommand('copy');
+            showOutput('📋 Code copied to clipboard!', 'success');
+        }
+
+        function downloadCode() {
+            const code = document.getElementById('editor').value;
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'generated-code.js';
+            a.click();
+            URL.revokeObjectURL(url);
+            showOutput('💾 Code downloaded!', 'success');
+        }
+
+        function runCode() {
+            const code = document.getElementById('editor').value;
+            showOutput('▶️ Code execution is simulated in browser. For real execution, use Node.js or integrate a sandbox.', 'info');
+        }
+
+        async function refreshMetrics() {
+            try {
+                const response = await fetch(`${API_URL}/metrics`);
+                const metrics = await response.json();
+                
+                document.getElementById('metricsDisplay').innerHTML = `
+                    <div style="margin: 5px 0;">
+                        📊 Requests: <strong>${metrics.totalRequests}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        💾 Cache Hits: <strong>${metrics.cacheHits}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        📄 Templates: <strong>${metrics.templateHits}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        🤖 API Calls: <strong>${metrics.apiCalls}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        ⚡ Avg Speed: <strong>${metrics.averageSpeed}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        🚀 Multiplier: <strong>${metrics.speedMultiplier}</strong>
+                    </div>
+                    <div style="margin: 5px 0;">
+                        💰 Tokens: <strong>${metrics.totalTokensUsed}</strong>
+                    </div>
+                `;
+
+                document.getElementById('speedMetric').textContent = metrics.speedMultiplier;
+                document.getElementById('statusText').textContent = 
+                    metrics.geminiAvailable ? 'Gemini Connected' : 'Templates Only';
+            } catch (error) {
+                console.error('Failed to fetch metrics:', error);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to generate
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generateCode();
+            }
+            // Ctrl/Cmd + S to download
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                downloadCode();
+            }
+        });
+
+        // Auto-refresh metrics
+        setInterval(refreshMetrics, 5000);
+        
+        // Initial load
+        refreshMetrics();
+    </script>
+</body>
+</html>
